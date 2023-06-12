@@ -1,6 +1,8 @@
 import pygame
 from math import *
 
+
+
 pygame.init()
 
 
@@ -11,11 +13,10 @@ Cube_Distance = 10
 Fov_Angle = 45
 WIDTH, HEIGHT = 1300, 1000
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-scale = 100
-FOV = 20
+scale = 50
+FOV = 300
 points = []
 Setpoints = []
-AspectRatio = WIDTH/HEIGHT
 ZFarDistance = 2
 ZNearDistance = 2
 Angle = 0
@@ -50,17 +51,26 @@ Homogeneous_Matrix = [
     [0,0,1]
 ]
 
+def AddFOV(Matrix):
+    Matrix[0][0] =  (WIDTH/HEIGHT) * (1/ tan(FOV/2))
+    Matrix[1][1] = 1/ tan(FOV/2)
+    return Matrix
 
-# def MakePerspective(Matrix):
-#     print(Matrix)
-#     Matrix[0][0] = AspectRatio * (1/ tan(FOV/2))
-#     Matrix[1][1] = 1/ tan(FOV/2)
-#     Matrix[2][2] = ZFarDistance / (ZFarDistance - ZNearDistance)
-#     Matrix[2][3] = (-ZFarDistance * ZNearDistance) / (ZFarDistance - ZNearDistance)
-#     Matrix[3][2] = 1
+def AddPerspective(Matrix):
+    Matrix[2][2] = ZFarDistance / (ZFarDistance - ZNearDistance)
+    Matrix[2][3] = (-ZFarDistance * ZNearDistance) / (ZFarDistance - ZNearDistance)
+    
+    return Matrix
+def MakePerspective(Matrix):
+    print(Matrix)
+    Matrix[0][0] = (WIDTH/HEIGHT) * (1/ tan(FOV/2))
+    Matrix[1][1] = 1/ tan(FOV/2)
+    Matrix[2][2] = ZFarDistance / (ZFarDistance - ZNearDistance)
+    Matrix[2][3] = (-ZFarDistance * ZNearDistance) / (ZFarDistance - ZNearDistance)
+    Matrix[3][2] = 1
 
 
-#     return Matrix
+    return Matrix
 
 
 
@@ -100,10 +110,6 @@ def connect_points(i, j, points):
         screen, (0, 37, 153), (points[i][0], points[i][1]), (points[j][0], points[j][1]))
 
 
-#def NormalizingZ(Z):
-
-
-
 
 #Rotation Maxtrix Tranformation
 def RotateAround_Z(Angle):
@@ -141,8 +147,8 @@ HoldDown_S = False
 HoldDown_W = False
 HoldDown_A = False
 HoldDown_D = False
-
-
+HoldDown_Q = False
+HoldDown_E = False
 S_Rotate = 0
 while True:
 
@@ -168,9 +174,12 @@ while True:
                 HoldDown_W = True
             if event.key == pygame.K_s:
                 HoldDown_S = True
-                
+            
+            if event.key == pygame.K_q:
+                HoldDown_Q = True
+            if event.key == pygame.K_e:
+                HoldDown_E = True
             if event.key == pygame.K_a:
-
                 HoldDown_A = True
             if event.key == pygame.K_d:
                 HoldDown_D = True
@@ -185,6 +194,10 @@ while True:
                 HoldDown_A = False
             if event.key == pygame.K_d:
                 HoldDown_D = False
+            if event.key == pygame.K_q:
+                HoldDown_Q = False
+            if event.key == pygame.K_e:
+                HoldDown_E = False
 
 
     screen.fill(WHITE)
@@ -208,6 +221,15 @@ while True:
             Rotate = AddMatrix(MutiplyMatrix(RotateAround_Y(Angle), p))
             S_Rotate = RotateAround_Y(Angle)
 
+        if HoldDown_Q == True:
+            Angle -= 0.01
+            Rotate = AddMatrix(MutiplyMatrix(RotateAround_X(Angle), p))
+            S_Rotate = RotateAround_X(Angle)
+
+        if HoldDown_E == True:
+            Angle += 0.01
+            Rotate = AddMatrix(MutiplyMatrix(RotateAround_Z(Angle), p))
+            S_Rotate = RotateAround_Z(Angle)
             
 
 
@@ -220,7 +242,7 @@ while True:
             [0, 0, 0],
         ]
 
-
+        #Homogeneous_Projection_Matrix = AddFOV(Homogeneous_Projection_Matrix)
         MTB = AddMatrix(MutiplyMatrix(Homogeneous_Projection_Matrix, Rotate))
         x = int(MTB[0] * scale) + (WIDTH/2)
         y = int(MTB[1] * scale) + (HEIGHT/2)
