@@ -1,9 +1,4 @@
 import pygame
-from threading import Thread
-import time 
-from math import *
-
-
 
 pygame.init()
 
