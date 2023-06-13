@@ -243,9 +243,8 @@ while True:
         else:
             MovementChanger = 1
         
-        print(MovementChanger)
         if HoldDown_A == True:
-            Angle -= (0.003/MovementChanger)
+            Angle -= (0.002 /MovementChanger)
             Rotate = AddMatrix(MutiplyMatrix(RotateAround_Y(Angle), p))
             S_Rotate = RotateAround_Y(Angle)
 
@@ -322,8 +321,6 @@ while True:
         connect_points(p, (p+1) % 4, projected_points)
         connect_points(p+4, ((p+1) % 4) + 4, projected_points)
         connect_points(p, (p+4), projected_points)
-
-
 
 
     pygame.display.update()
