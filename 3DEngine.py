@@ -1,17 +1,14 @@
 import pygame
 from math import *
 
-
-
 pygame.init()
-
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
 Cube_Distance = 10
 Fov_Angle = 45
-WIDTH, HEIGHT = 1300, 1000
+WIDTH, HEIGHT = 1200, 1000
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 scale = 50
 FOV = 300
@@ -34,7 +31,33 @@ points.append([-1, -1, -1])
 points.append([1, -1, -1])
 points.append([1, 1, -1])
 points.append([-1, 1, -1])
+points.append([-0.01, -3, 0.2])
 
+#Door
+points.append([0.3, 1, 1])
+points.append([-0.3, 1, 1])
+points.append([-0.3, 0.1, 1])
+points.append([0.3, 0.1, 1])
+points.append([-0.22, 0.6, 1])
+
+#Windows
+points.append([-1, -0.3, 0.4])
+points.append([-1, -0.3, -0.4])
+points.append([-1, 0.3, 0.4])
+points.append([-1, 0.3, -0.4])
+points.append([-1, 0.3, 0])
+points.append([-1, -0.3, 0])
+points.append([-1, 0, 0.4])
+points.append([-1, 0, -0.4])
+
+points.append([1, -0.3, 0.4])
+points.append([1, -0.3, -0.4])
+points.append([1, 0.3, 0.4])
+points.append([1, 0.3, -0.4])
+points.append([1, 0.3, 0])
+points.append([1, -0.3, 0])
+points.append([1, 0, 0.4])
+points.append([1, 0, -0.4])
 
 def AddMatrix(Matrix):
     t=[]
@@ -107,7 +130,7 @@ projected_points = [
 
 def connect_points(i, j, points):
     pygame.draw.line(
-        screen, (0, 37, 153), (points[i][0], points[i][1]), (points[j][0], points[j][1]))
+        screen, (0, 37, 153), (points[i][0], points[i][1]), (points[j][0], points[j][1]), 4)
 
 
 
@@ -149,7 +172,9 @@ HoldDown_A = False
 HoldDown_D = False
 HoldDown_Q = False
 HoldDown_E = False
+HoldDown_LSHIFT = False
 S_Rotate = 0
+MovementChanger = 1
 while True:
 
 
@@ -183,12 +208,15 @@ while True:
                 HoldDown_A = True
             if event.key == pygame.K_d:
                 HoldDown_D = True
+            if event.key == pygame.K_LSHIFT:
+                HoldDown_LSHIFT = True
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_w:
                 HoldDown_W = False
             if event.key == pygame.K_s:
                 HoldDown_S = False
-
+            if event.key == pygame.K_LSHIFT:
+                HoldDown_LSHIFT = False
 
             if event.key == pygame.K_a:
                 HoldDown_A = False
@@ -210,24 +238,29 @@ while True:
         else:
             Rotate = AddMatrix(MutiplyMatrix(Homogeneous_Matrix, p))
 
-
+        if HoldDown_LSHIFT == True:
+            MovementChanger = 3
+        else:
+            MovementChanger = 1
+        
+        print(MovementChanger)
         if HoldDown_A == True:
-            Angle -= 0.01
+            Angle -= (0.003/MovementChanger)
             Rotate = AddMatrix(MutiplyMatrix(RotateAround_Y(Angle), p))
             S_Rotate = RotateAround_Y(Angle)
 
         if HoldDown_D == True:
-            Angle += 0.01
+            Angle += (0.002/MovementChanger)
             Rotate = AddMatrix(MutiplyMatrix(RotateAround_Y(Angle), p))
             S_Rotate = RotateAround_Y(Angle)
 
         if HoldDown_Q == True:
-            Angle -= 0.01
+            Angle -= (0.002/MovementChanger)
             Rotate = AddMatrix(MutiplyMatrix(RotateAround_X(Angle), p))
             S_Rotate = RotateAround_X(Angle)
 
         if HoldDown_E == True:
-            Angle += 0.01
+            Angle += (0.002/MovementChanger)
             Rotate = AddMatrix(MutiplyMatrix(RotateAround_Z(Angle), p))
             S_Rotate = RotateAround_Z(Angle)
             
@@ -247,18 +280,43 @@ while True:
         x = int(MTB[0] * scale) + (WIDTH/2)
         y = int(MTB[1] * scale) + (HEIGHT/2)
         projected_points[i] = [x, y]
-        pygame.draw.circle(screen, BLACK, (x, y), 5)
-        text = font.render(str(i), True, BLACK)
-        screen.blit(text, (x,y))
+        #pygame.draw.circle(screen, BLACK, (x, y), 5)
+        #text = font.render(str(i), True, BLACK)
+        #screen.blit(text, (x,y))
 
     for p in range(4):
         #Triangle
-        connect_points(1, 3, projected_points)
-        connect_points(5, 7, projected_points)
-        connect_points(6, 3, projected_points)
-        connect_points(4, 1, projected_points)
-        connect_points(0, 7, projected_points)
-        connect_points(5, 2, projected_points)
+        # connect_points(1, 3, projected_points)
+        # connect_points(5, 7, projected_points)
+        # connect_points(6, 3, projected_points)
+        # connect_points(0, 7, projected_points)
+        # connect_points(5, 2, projected_points)
+
+        connect_points(0, 8, projected_points)
+        connect_points(1, 8, projected_points)
+        connect_points(4, 8, projected_points)
+        connect_points(5, 8, projected_points)
+        
+        connect_points(9, 10, projected_points)
+        connect_points(10, 11, projected_points)
+        connect_points(11, 12, projected_points)
+        connect_points(12, 9, projected_points)
+
+
+        connect_points(14, 15, projected_points)
+        connect_points(15, 17, projected_points)
+        connect_points(17, 16, projected_points)
+        connect_points(16, 14, projected_points)
+        connect_points(19, 18, projected_points)
+        connect_points(21, 20, projected_points)
+
+
+        connect_points(22, 23, projected_points)
+        connect_points(23, 25, projected_points)
+        connect_points(25, 24, projected_points)
+        connect_points(24, 22, projected_points)
+        connect_points(27, 26, projected_points)
+        connect_points(28, 29, projected_points)
 
         #Faces
         connect_points(p, (p+1) % 4, projected_points)
